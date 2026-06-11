@@ -117,7 +117,108 @@ internal class GrammarFuzzer(
         state: ExpansionState,
         strategy: ExpansionStrategy,
         preferRecursive: Boolean
-    ): MutableList<DerivationNode> = TODO("Exercise 2: expand one pending derivation-tree node")
+    ): MutableList<DerivationNode> {
+        val children = when (val expr = node.expression) {
+            is Expression.Terminal ->
+                mutableListOf()
+
+            is Expression.NonTerminal -> {
+                if (expr.name in node.path) {
+                    state.recursiveDescents =
+                        maxOf(
+                            state.recursiveDescents,
+                            node.path.count { it == expr.name } + 1
+                        )
+                }
+
+                mutableListOf(
+                    DerivationNode(
+                        grammar.productions.getValue(expr.name),
+                        node.path + expr.name,
+                        node.level + 1
+                    )
+                )
+            }
+
+            is Expression.Sequence ->
+                expr.parts.map {
+                    DerivationNode(
+                        it,
+                        node.path,
+                        node.level + 1
+                    )
+                }.toMutableList()
+
+            is Expression.Choice -> {
+                val chosen = chooseAlternative(
+                    expr.alternatives,
+                    node.path,
+                    state,
+                    strategy
+                )
+
+                mutableListOf(
+                    DerivationNode(
+                        chosen,
+                        node.path,
+                        node.level + 1
+                    )
+                )
+            }
+
+            is Expression.Optional -> {
+                if (
+                    includeOptional(
+                        expr.body,
+                        node.path,
+                        state,
+                        strategy,
+                        preferRecursive
+                    )
+                ) {
+                    mutableListOf(
+                        DerivationNode(
+                            expr.body,
+                            node.path,
+                            node.level + 1
+                        )
+                    )
+                } else {
+                    mutableListOf()
+                }
+            }
+
+            is Expression.Repetition -> {
+                val count = repetitionCount(
+                    expr.body,
+                    node.path,
+                    state,
+                    strategy,
+                    preferRecursive
+                )
+
+                MutableList(count) {
+                    DerivationNode(
+                        expr.body,
+                        node.path,
+                        node.level + 1
+                    )
+                }
+            }
+
+            is Expression.Group ->
+                mutableListOf(
+                    DerivationNode(
+                        expr.body,
+                        node.path,
+                        node.level + 1
+                    )
+                )
+        }
+
+        resolveTerminals(children)
+        return children
+    }
 
     /** Marks terminal children as already closed, so they are never expanded again. */
     private fun resolveTerminals(nodes: MutableList<DerivationNode>) {
