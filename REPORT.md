@@ -1,6 +1,8 @@
 # Fuzzing report: iase26 Assignment 04
 
 Name(s) and student ID:
+Rohit Sonejee - 4756184
+Thanh Tran - 4209012
 
 ## Platform tested
 
@@ -14,7 +16,7 @@ directory name. One representative per exit code is enough.
 
 1. Exit Code `-1073741819` (Access Violation). Representative input:
    ```toml
-   greeting="hello world 
+   greeting="hello world
    words=["a", "b", "c"]
    matrix=[["a", "b"], ["c", "d"]]
    ```
