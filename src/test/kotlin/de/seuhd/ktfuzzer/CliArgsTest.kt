@@ -27,7 +27,7 @@ class CliArgsTest {
 
     @Test
     fun `--target sets the config path`() {
-        assertEquals("targets/c/target.yaml", ok("--target", "targets/c/target.yaml").targetPath.toString())
+        assertEquals("targets/c/target.yaml", ok("--target", "targets/c/target.yaml").targetPath.toString().replace('\\', '/'))
     }
 
     @Test

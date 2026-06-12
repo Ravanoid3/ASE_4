@@ -4,8 +4,7 @@ Name(s) and student ID:
 
 ## Platform tested
 
-(The OS and architecture you ran the fuzzer on, e.g. macOS 14 arm64, Ubuntu 22.04 x86_64,
-Windows 11 x86_64.)
+Windows 11 x86_64
 
 ## Exercise 1: mutational fuzzer
 
@@ -13,8 +12,18 @@ The crash exit codes you found. For each exit code, give one representative inpu
 generate it). Crashing inputs are grouped under `output/crashes/exit<code>/`, so the exit code is the
 directory name. One representative per exit code is enough.
 
-1. (input and exit code or signal)
-2. (input and exit code or signal)
+1. Exit Code `-1073741819` (Access Violation). Representative input:
+   ```toml
+   greeting="hello world 
+   words=["a", "b", "c"]
+   matrix=[["a", "b"], ["c", "d"]]
+   ```
+2. Exit Code `-1073740940` (Heap Corruption). Representative input:
+   ```toml
+   greeting="hello world"
+   words=["a", "b", "c"]
+   matrix=[["a", "b"], ["c", ,d"]]
+   ```
 
 ## Exercise 2: grammar-based fuzzer
 
